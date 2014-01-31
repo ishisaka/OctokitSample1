@@ -24,7 +24,7 @@ namespace OctokitSample
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
+    using System.Linq;
     using System.Net;
     using System.Net.Http.Headers;
 
@@ -49,13 +49,13 @@ namespace OctokitSample
             // Basic認証のオブジェクトを作成する
             // OAuthのTokenを引数に与えても良い
             var credential = new Credentials("ishisaka", password);
-            
+
             // 認証付きでGutHUbのクライアントを作成
             var github = new GitHubClient(
                 new ProductHeaderValue("IhsisakaSample"), 
                 new InMemoryCredentialStore(credential));
 
-            // イシューを取得する。オーナー名、プロジェクト名を引数に
+            // イシューを取得する。オーナー名、レポジトリ名を引数に
             IReadOnlyList<Issue> issues = await github.Issue.GetForRepository("ishisaka", "juzshizuoka");
             foreach (Issue issue in issues)
             {
@@ -69,14 +69,14 @@ namespace OctokitSample
         }
 
         /// <summary>
-        ///     プロジェクトのIssueを取得するサンプル
+        ///     レポジトリのIssueを取得するサンプル
         /// </summary>
         public async void GetIssues()
         {
-            // クライアントを作成する。公開プロジェクトなら認証は必要なし
+            // クライアントを作成する。公開レポジトリなら認証は必要なし
             var github = new GitHubClient(new ProductHeaderValue("IshisakaSample"));
 
-            // イシューを取得する。オーナー名、プロジェクト名を引数に
+            // イシューを取得する。オーナー名、レポジトリ名を引数に
             IReadOnlyList<Issue> issues = await github.Issue.GetForRepository("ishisaka", "nodeintellisense");
             foreach (Issue issue in issues)
             {
@@ -98,22 +98,47 @@ namespace OctokitSample
         }
 
         /// <summary>
-        /// プロジェクトにIssueを追加・編集
+        /// レポジトリのLabelを取得する
+        /// </summary>
+        /// <param name="password">
+        /// The Password
+        /// </param>
+        public async void GetLabels(string password)
+        {
+            Console.WriteLine("レポジトリのLabelを取得する");
+            var credential = new Credentials("ishisaka", password);
+            var github = new GitHubClient(
+                new ProductHeaderValue("IshisakaSample"), 
+                new InMemoryCredentialStore(credential));
+
+            var labels = github.Issue.Labels;
+            foreach (var label in await labels.GetForRepository("ishisaka", "juzshizuoka"))
+            {
+                Console.WriteLine("Label:");
+                Console.WriteLine("Name " + label.Name);
+                Console.WriteLine("Color " + label.Color);
+                Console.WriteLine("URL " + label.Url);
+                Console.WriteLine("=========");
+            }
+        }
+
+        /// <summary>
+        /// レポジトリにIssueを追加・編集
         /// </summary>
         /// <param name="password">
         /// The password.
         /// </param>
         public async void PutIssues(string password)
         {
-            Console.WriteLine("プロジェクトにIssueを追加する");
+            Console.WriteLine("レポジトリにIssueを追加する");
             var credential = new Credentials("ishisaka", password);
             var github = new GitHubClient(
-                new ProductHeaderValue("IhsisakaSample"),
+                new ProductHeaderValue("IhsisakaSample"), 
                 new InMemoryCredentialStore(credential));
 
             var newIssue = new NewIssue("サンプルイシュー" + DateTime.Now.ToShortTimeString())
                                {
-                                   Body = "にほんごてきすと",
+                                   Body = "にほんごてきすと", 
 
                                    // 担当ユーザーの割り当てをする場合にはAssigneeプロパティに有効なユーザー名を指定
                                    Assignee = "ishisaka"
@@ -130,9 +155,7 @@ namespace OctokitSample
             Console.WriteLine("--------");
 
             // 編集 正直いちいちIssueUpdate作るのがメンドイ
-            var issuesUpdate = new IssueUpdate();
-            issuesUpdate.Title = ret.Title;
-            issuesUpdate.Body = ret.Body + "\r\n編集しました。";
+            var issuesUpdate = new IssueUpdate { Title = ret.Title, Body = ret.Body + "\r\n編集しました。" };
 
             var retUpdate = await github.Issue.Update("ishisaka", "juzshizuoka", ret.Number, issuesUpdate);
 
@@ -144,10 +167,7 @@ namespace OctokitSample
             Console.WriteLine("Body: \r\n{0}", retUpdate.Body);
             Console.WriteLine("User:\t{0}", retUpdate.User.Login);
             Console.WriteLine("--------");
-
         }
-
-
 
         #endregion
     }

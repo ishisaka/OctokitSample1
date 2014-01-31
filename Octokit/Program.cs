@@ -36,9 +36,16 @@ namespace OctokitSample
             Console.Write("GitHubのパスワードを入力してください:  ");
             string passWord = Console.ReadLine();            
             var sample = new Sample();
-            ////sample.GetIssues();
+            sample.GetIssues();
+            System.Threading.Thread.Sleep(1000);
+            Console.WriteLine();
             sample.AuthenticationSample(passWord);
+            System.Threading.Thread.Sleep(1000);
+            Console.WriteLine();
             sample.PutIssues(passWord);
+            System.Threading.Thread.Sleep(2000);
+            Console.WriteLine();
+            sample.GetLabels(passWord);
             Console.WriteLine("終わったら Enter key を押してね.");
             Console.ReadLine();
         }
