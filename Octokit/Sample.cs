@@ -154,6 +154,7 @@ namespace OctokitSample
             Console.WriteLine("User:\t{0}", ret.User.Login);
             Console.WriteLine("--------");
 
+            // 編集
             // 編集 正直いちいちIssueUpdate作るのがメンドイ
             var issuesUpdate = new IssueUpdate { Title = ret.Title, Body = ret.Body + "\r\n編集しました。" };
 

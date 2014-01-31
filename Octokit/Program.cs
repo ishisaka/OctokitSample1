@@ -20,6 +20,7 @@
 namespace OctokitSample
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     ///     実行ポイント
@@ -31,10 +32,13 @@ namespace OctokitSample
         /// <summary>
         ///     メインメソッド
         /// </summary>
+        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1305:FieldNamesMustNotUseHungarianNotation", Justification = "Reviewed. Suppression is OK here.")]
         private static void Main()
         {
             Console.Write("GitHubのパスワードを入力してください:  ");
-            string passWord = Console.ReadLine();            
+            var passWord = Console.ReadLine(); 
+           
+            // Octokit.NETでのサンプル
             var sample = new Sample();
             sample.GetIssues();
             System.Threading.Thread.Sleep(1000);
@@ -46,6 +50,17 @@ namespace OctokitSample
             System.Threading.Thread.Sleep(2000);
             Console.WriteLine();
             sample.GetLabels(passWord);
+            System.Threading.Thread.Sleep(2000);
+
+            // Octokit.Reactiveでのサンプル
+            Console.WriteLine("\r\nRxでのサンプル");
+
+            var rxSample = new ReactiveSample();
+            rxSample.GetIssues();
+            System.Threading.Thread.Sleep(1000);
+            rxSample.PutIssue(passWord);
+            System.Threading.Thread.Sleep(1500);
+
             Console.WriteLine("終わったら Enter key を押してね.");
             Console.ReadLine();
         }
