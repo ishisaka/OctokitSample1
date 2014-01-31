@@ -20,11 +20,6 @@
 namespace OctokitSample
 {
     using System;
-    using System.Collections.Generic;
-    using System.Net;
-    using System.Net.Http.Headers;
-
-    using Octokit;
 
     /// <summary>
     ///     実行ポイント
@@ -38,46 +33,13 @@ namespace OctokitSample
         /// </summary>
         private static void Main()
         {
+            Console.Write("GitHubのパスワードを入力してください:  ");
+            string passWord = Console.ReadLine();            
             var sample = new Sample();
-            sample.GetIssues();
+            ////sample.GetIssues();
+            sample.AuthenticationSample(passWord);
+            Console.WriteLine("終わったら Enter key を押してね.");
             Console.ReadLine();
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    ///     OctoKit.NETを使用したGitHubアクセスのサンプル
-    /// </summary>
-    public class Sample
-    {
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     プロジェクトのIssueを取得するサンプル
-        /// </summary>
-        public async void GetIssues()
-        {
-            // クライアントを作成する。公開プロジェクトなら認証は必要なし
-            var github = new GitHubClient(new ProductHeaderValue("IshisakaSample"));
-
-            // イシューを取得する。オーナー名、プロジェクト名を引数に
-            IReadOnlyList<Issue> issues = await github.Issue.GetForRepository("ishisaka", "nodeintellisense");
-            foreach (Issue issue in issues)
-            {
-                Console.WriteLine("Number:\t{0}", issue.Number);
-                Console.WriteLine("Title:\t{0}", issue.Title);
-                Console.WriteLine("Date:\t{0}", issue.CreatedAt);
-                Console.WriteLine("Body: \r\n{0}", issue.Body);
-                Console.WriteLine("User:\t{0}", issue.User.Login);
-                Console.WriteLine("--------");
-                var avatorUrl = new Uri(issue.User.AvatarUrl);
-                var client = new WebClient();
-                string downloadPath = @"d:\temp\" + issue.User.Login + ".png";
-                await
-                    client.DownloadFileTaskAsync(avatorUrl, downloadPath)
-                        .ContinueWith(t => Console.WriteLine(downloadPath + " download Complte."));
-            }
         }
 
         #endregion
