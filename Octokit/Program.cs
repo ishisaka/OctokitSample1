@@ -38,6 +38,7 @@ namespace OctokitSample
             var sample = new Sample();
             ////sample.GetIssues();
             sample.AuthenticationSample(passWord);
+            sample.PutIssues(passWord);
             Console.WriteLine("終わったら Enter key を押してね.");
             Console.ReadLine();
         }

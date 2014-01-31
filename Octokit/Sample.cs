@@ -24,6 +24,7 @@ namespace OctokitSample
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Net;
     using System.Net.Http.Headers;
 
@@ -95,6 +96,58 @@ namespace OctokitSample
                         .ContinueWith(t => Console.WriteLine(downloadPath + " download Complte."));
             }
         }
+
+        /// <summary>
+        /// プロジェクトにIssueを追加・編集
+        /// </summary>
+        /// <param name="password">
+        /// The password.
+        /// </param>
+        public async void PutIssues(string password)
+        {
+            Console.WriteLine("プロジェクトにIssueを追加する");
+            var credential = new Credentials("ishisaka", password);
+            var github = new GitHubClient(
+                new ProductHeaderValue("IhsisakaSample"),
+                new InMemoryCredentialStore(credential));
+
+            var newIssue = new NewIssue("サンプルイシュー" + DateTime.Now.ToShortTimeString())
+                               {
+                                   Body = "にほんごてきすと",
+
+                                   // 担当ユーザーの割り当てをする場合にはAssigneeプロパティに有効なユーザー名を指定
+                                   Assignee = "ishisaka"
+                               };
+
+            // Issueを新規追加。追加されたIssueが戻ってくる
+            var ret = await github.Issue.Create("ishisaka", "juzshizuoka", newIssue);
+            Console.WriteLine("追加されたIssue");
+            Console.WriteLine("Number:\t{0}", ret.Number);
+            Console.WriteLine("Title:\t{0}", ret.Title);
+            Console.WriteLine("Date:\t{0}", ret.CreatedAt);
+            Console.WriteLine("Body: \r\n{0}", ret.Body);
+            Console.WriteLine("User:\t{0}", ret.User.Login);
+            Console.WriteLine("--------");
+
+            // 編集 正直いちいちIssueUpdate作るのがメンドイ
+            var issuesUpdate = new IssueUpdate();
+            issuesUpdate.Title = ret.Title;
+            issuesUpdate.Body = ret.Body + "\r\n編集しました。";
+
+            var retUpdate = await github.Issue.Update("ishisaka", "juzshizuoka", ret.Number, issuesUpdate);
+
+            // 編集されたIssue
+            Console.WriteLine("編集されたIssue");
+            Console.WriteLine("Number:\t{0}", retUpdate.Number);
+            Console.WriteLine("Title:\t{0}", retUpdate.Title);
+            Console.WriteLine("Date:\t{0}", retUpdate.CreatedAt);
+            Console.WriteLine("Body: \r\n{0}", retUpdate.Body);
+            Console.WriteLine("User:\t{0}", retUpdate.User.Login);
+            Console.WriteLine("--------");
+
+        }
+
+
 
         #endregion
     }
