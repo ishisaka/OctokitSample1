@@ -71,16 +71,16 @@ namespace OctokitSample
             Console.WriteLine("レポジトリにIssueを追加する");
             var credential = new Credentials("ishisaka", password);
             var github = new GitHubClient(
-                new ProductHeaderValue("IhsisakaSample"), 
+                new ProductHeaderValue("IshisakaSample"), 
                 new InMemoryCredentialStore(credential));
 
             var newIssue = new NewIssue("サンプルイシュー" + DateTime.Now.ToShortTimeString())
-                               {
-                                   Body = "にほんごてきすと", 
+                                {
+                                    Body = "にほんごてきすと", 
 
-                                   // 担当ユーザーの割り当てをする場合にはAssigneeプロパティに有効なユーザー名を指定
-                                   Assignee = "ishisaka"
-                               };
+                                    // 担当ユーザーの割り当てをする場合にはAssigneeプロパティに有効なユーザー名を指定
+                                    Assignee = "ishisaka"
+                                };
 
             var issueObserver = new ObservableIssuesClient(github);
             issueObserver.Create("ishisaka", "juzshizuoka", newIssue).Subscribe(

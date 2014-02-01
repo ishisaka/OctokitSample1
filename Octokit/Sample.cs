@@ -24,7 +24,6 @@ namespace OctokitSample
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Net;
     using System.Net.Http.Headers;
 
@@ -137,12 +136,12 @@ namespace OctokitSample
                 new InMemoryCredentialStore(credential));
 
             var newIssue = new NewIssue("サンプルイシュー" + DateTime.Now.ToShortTimeString())
-                               {
-                                   Body = "にほんごてきすと", 
+                                {
+                                    Body = "にほんごてきすと", 
 
-                                   // 担当ユーザーの割り当てをする場合にはAssigneeプロパティに有効なユーザー名を指定
-                                   Assignee = "ishisaka"
-                               };
+                                    // 担当ユーザーの割り当てをする場合にはAssigneeプロパティに有効なユーザー名を指定
+                                    Assignee = "ishisaka"
+                                };
 
             // Issueを新規追加。追加されたIssueが戻ってくる
             var ret = await github.Issue.Create("ishisaka", "juzshizuoka", newIssue);
@@ -168,6 +167,36 @@ namespace OctokitSample
             Console.WriteLine("Body: \r\n{0}", retUpdate.Body);
             Console.WriteLine("User:\t{0}", retUpdate.User.Login);
             Console.WriteLine("--------");
+        }
+        
+        /// <summary>
+        /// Proxyを使用する場合の初期化方法
+        /// </summary>
+        /// <param name="password">パスワード文字列</param>
+        protected async void UseProxySample(string password)
+        {
+            var proxy = new WebProxy("Proxy Address");
+
+            // IE(System)のProxy設定を使用する場合には上に変わって以下のようにします。
+            ////var proxy = WebRequest.GetSystemWebProxy();
+
+            // 認証Proxyを使用している場合でNTLM認証(システムの認証情報)を使用する場合には以下のように指定する
+            proxy.Credentials = CredentialCache.DefaultCredentials;
+
+            // Basicユーザー認証を使用するProxyでは上に変わり下のように指定します。
+            ////proxy.Credentials = new NetworkCredential("User", "password");
+
+            var client = new HttpClientAdapter(proxy);
+            var credentialStore = new InMemoryCredentialStore(new Credentials("UserName", password));
+            var connection = new Connection(
+                new ProductHeaderValue("IshiakaApps"),
+                GitHubClient.GitHubApiUrl,
+                credentialStore,
+                client,
+                new SimpleJsonSerializer());
+            var github = new GitHubClient(connection);
+
+            // next something else.
         }
 
         #endregion
